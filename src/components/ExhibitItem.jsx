@@ -2,16 +2,24 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { Text, Html } from '@react-three/drei';
-import { createFallbackCanvasTexture } from '../utils/textureHelper';
+import {
+  createFallbackCanvasTexture,
+  createAnthemPlaqueTexture
+} from '../utils/textureHelper';
 
 export function ExhibitItem({ exhibit, isSelected, isHovered, onSelect, onHover }) {
   const groupRef = useRef();
-  const [texture, setTexture] = useState(() =>
-    createFallbackCanvasTexture(exhibit.name, exhibit.title)
-  );
+  const [texture, setTexture] = useState(() => {
+    if (exhibit.isPlaque) {
+      return createAnthemPlaqueTexture();
+    }
+    return createFallbackCanvasTexture(exhibit.title, 'Мемлекеттік рәміз');
+  });
 
   // Load texture safely with fallback
   useEffect(() => {
+    if (exhibit.isPlaque && !exhibit.image) return;
+
     let isMounted = true;
     const loader = new THREE.TextureLoader();
     loader.load(
@@ -25,19 +33,25 @@ export function ExhibitItem({ exhibit, isSelected, isHovered, onSelect, onHover 
       },
       undefined,
       (err) => {
-        console.warn(`[Museum] Image ${exhibit.image} not found. Fallback texture active.`, err);
+        console.warn(`[Museum] Image ${exhibit.image} not found. Fallback active.`, err);
+        if (isMounted) {
+          setTexture(
+            exhibit.isPlaque
+              ? createAnthemPlaqueTexture()
+              : createFallbackCanvasTexture(exhibit.title, 'Мемлекеттік рәміз')
+          );
+        }
       }
     );
     return () => {
       isMounted = false;
     };
-  }, [exhibit.image, exhibit.name, exhibit.title]);
+  }, [exhibit.image, exhibit.title, exhibit.isPlaque]);
 
-  // Subtle floating / pulse animation when hovered or selected
+  // Gentle breathing / scaling animation
   useFrame((state, delta) => {
     if (!groupRef.current) return;
     if (isSelected) {
-      // Gentle breathing scale
       const s = 1 + Math.sin(state.clock.elapsedTime * 2.5) * 0.015;
       groupRef.current.scale.lerp(new THREE.Vector3(s, s, s), delta * 4);
     } else if (isHovered) {
@@ -48,8 +62,8 @@ export function ExhibitItem({ exhibit, isSelected, isHovered, onSelect, onHover 
   });
 
   // Exhibit specific frame sizes
-  const frameWidth = exhibit.id === 'flag' ? 2.1 : exhibit.id === 'coat-of-arms' ? 1.7 : 1.5;
-  const frameHeight = exhibit.id === 'flag' ? 1.3 : exhibit.id === 'coat-of-arms' ? 1.7 : 1.9;
+  const frameWidth = exhibit.id === 'flag' ? 2.1 : exhibit.id === 'emblem' ? 1.7 : 1.5;
+  const frameHeight = exhibit.id === 'flag' ? 1.3 : exhibit.id === 'emblem' ? 1.7 : 1.9;
   const pictureWidth = frameWidth - 0.16;
   const pictureHeight = frameHeight - 0.16;
 
@@ -88,9 +102,9 @@ export function ExhibitItem({ exhibit, isSelected, isHovered, onSelect, onHover 
         />
       </mesh>
 
-      {/* Front Gold Plaque with Name & Number */}
+      {/* Front Gold Plaque with Name & Year */}
       <mesh position={[0, 0.48, 0.355]}>
-        <planeGeometry args={[0.8, 0.28]} />
+        <planeGeometry args={[0.84, 0.28]} />
         <meshStandardMaterial
           color="#1e2c3f"
           roughness={0.3}
@@ -100,7 +114,7 @@ export function ExhibitItem({ exhibit, isSelected, isHovered, onSelect, onHover 
 
       {/* Plaque Gold Border */}
       <mesh position={[0, 0.48, 0.356]}>
-        <planeGeometry args={[0.82, 0.3]} />
+        <planeGeometry args={[0.86, 0.3]} />
         <meshStandardMaterial
           color="#d4af37"
           roughness={0.2}
@@ -112,13 +126,13 @@ export function ExhibitItem({ exhibit, isSelected, isHovered, onSelect, onHover 
       {/* Plaque 3D Text */}
       <Text
         position={[0, 0.53, 0.36]}
-        fontSize={0.07}
+        fontSize={0.065}
         color="#f5d77f"
         anchorX="center"
         anchorY="middle"
         font="https://fonts.gstatic.com/s/outfit/v11/QEUWsgEr9ERC-v3oqfv7wPb9.woff2"
       >
-        {`${exhibit.number} • ${exhibit.name.toUpperCase()}`}
+        {`${exhibit.number} • ${exhibit.title.toUpperCase()}`}
       </Text>
       <Text
         position={[0, 0.43, 0.36]}
@@ -126,9 +140,9 @@ export function ExhibitItem({ exhibit, isSelected, isHovered, onSelect, onHover 
         color="#cbd5e1"
         anchorX="center"
         anchorY="middle"
-        maxWidth={0.7}
+        maxWidth={0.75}
       >
-        {exhibit.adoptedDate}
+        {`${exhibit.year} жыл`}
       </Text>
 
       {/* 2. Easel / Frame Mount behind the picture */}
@@ -155,7 +169,7 @@ export function ExhibitItem({ exhibit, isSelected, isHovered, onSelect, onHover 
           <meshStandardMaterial color="#0a121c" roughness={0.8} />
         </mesh>
 
-        {/* Artwork Canvas with Exhibit Texture */}
+        {/* Artwork Canvas / Plaque with Texture */}
         <mesh position={[0, 0, 0.052]}>
           <planeGeometry args={[pictureWidth, pictureHeight]} />
           <meshStandardMaterial
@@ -209,10 +223,10 @@ export function ExhibitItem({ exhibit, isSelected, isHovered, onSelect, onHover 
               }}
               className="museum-pin-btn"
               title="Толығырақ көру"
-              aria-label={`${exhibit.name} жәдігерін көру`}
+              aria-label={`${exhibit.title} жәдігерін көру`}
             >
               <span className="museum-pin-dot"></span>
-              <span className="museum-pin-text">{exhibit.name}</span>
+              <span className="museum-pin-text">{exhibit.title}</span>
             </button>
           </Html>
         )}

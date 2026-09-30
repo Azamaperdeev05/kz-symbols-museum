@@ -147,12 +147,13 @@ export function App() {
             {/* Bottom Info Sheet / Details Panel */}
             {activeExhibit && (
               <InfoPanel
+                key={activeExhibit.id}
                 exhibit={activeExhibit}
                 onClose={() => setActiveExhibit(null)}
                 onPrev={handlePrev}
                 onNext={handleNext}
                 onOverview={handleOverview}
-                currentIndex={currentIndex}
+                _currentIndex={currentIndex}
                 totalCount={EXHIBITS.length}
               />
             )}

@@ -35,7 +35,7 @@ export function TopBar({
                 aria-pressed={isActive}
               >
                 <span className="pill-number">{exhibit.number}</span>
-                <span className="pill-name">{exhibit.name}</span>
+                <span className="pill-name">{exhibit.id === 'anthem' ? 'Әнұран' : exhibit.title}</span>
               </button>
             );
           })}

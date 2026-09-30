@@ -32,12 +32,12 @@ export function MuseumLights({ activeExhibitId }) {
         distance={9}
       />
 
-      {/* Coat of Arms Spotlight */}
+      {/* Coat of Arms / Emblem Spotlight */}
       <spotLight
         position={[0, 4.8, -2.2]}
         target-position={[0, 1.8, -3.8]}
         color="#fff5cc"
-        intensity={activeExhibitId === 'coat-of-arms' ? 25 : 16}
+        intensity={activeExhibitId === 'emblem' ? 25 : 16}
         angle={0.55}
         penumbra={0.6}
         distance={9}
