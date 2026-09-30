@@ -187,7 +187,12 @@ export function ExhibitItem({ exhibit, isSelected, isHovered, onSelect, onHover 
 
         {/* Interactive Call-to-Action Indicator */}
         {!isSelected && (
-          <Html position={[0, -frameHeight / 2 - 0.15, 0.1]} center distanceFactor={8}>
+          <Html
+            position={[0, -frameHeight / 2 - 0.15, 0.1]}
+            center
+            distanceFactor={8}
+            zIndexRange={[10, 0]}
+          >
             <button
               onClick={(e) => {
                 e.stopPropagation();

@@ -1,8 +1,8 @@
 import React from 'react';
-import { Compass, Sparkles, BookOpen, Layers } from 'lucide-react';
+import { Compass, Sparkles, BookOpen, Layers, QrCode } from 'lucide-react';
 import { MUSEUM_METADATA } from '../data/exhibits';
 
-export function StartModal({ onEnter, onSwitchToFallback }) {
+export function StartModal({ onEnter, onSwitchToFallback, onOpenQr }) {
   return (
     <div className="start-modal-backdrop">
       <div className="start-modal-card" role="dialog" aria-modal="true">
@@ -56,13 +56,24 @@ export function StartModal({ onEnter, onSwitchToFallback }) {
             <Layers size={20} />
           </button>
 
-          <button
-            onClick={onSwitchToFallback}
-            className="text-mode-btn"
-          >
-            <BookOpen size={17} />
-            <span>Тізім түрінде оқу (2D нұсқа)</span>
-          </button>
+          <div className="modal-secondary-actions">
+            <button
+              onClick={onOpenQr}
+              className="qr-start-btn"
+              title="Сайттың QR-кодын көрсету"
+            >
+              <QrCode size={17} className="gold-sparkle" />
+              <span>QR-код</span>
+            </button>
+
+            <button
+              onClick={onSwitchToFallback}
+              className="text-mode-btn"
+            >
+              <BookOpen size={17} />
+              <span>Тізім түрінде оқу (2D)</span>
+            </button>
+          </div>
         </div>
 
         {/* Footer info */}

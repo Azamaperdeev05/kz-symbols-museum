@@ -11,7 +11,8 @@ export function MuseumCanvas({
   hoveredExhibitId,
   onSelectExhibit,
   onHoverExhibit,
-  onFloorClick
+  onFloorClick,
+  walkDirection = 0
 }) {
   return (
     <div className="canvas-container">
@@ -40,8 +41,11 @@ export function MuseumCanvas({
         <MuseumLights activeExhibitId={activeExhibit?.id} />
         <MuseumRoom />
 
-        {/* 2. Interactive Camera Controller */}
-        <CameraController activeExhibit={activeExhibit} />
+        {/* 2. Interactive Camera Controller with Walking & Orbiting */}
+        <CameraController
+          activeExhibit={activeExhibit}
+          walkDirection={walkDirection}
+        />
 
         {/* 3. Exhibits (each with its own instant canvas texture fallback) */}
         <Suspense fallback={null}>

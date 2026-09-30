@@ -5,6 +5,8 @@ import { StartModal } from './components/StartModal';
 import { TopBar } from './components/TopBar';
 import { FallbackView } from './components/FallbackView';
 import { CanvasErrorBoundary } from './components/CanvasErrorBoundary';
+import { QrModal } from './components/QrModal';
+import { WalkControls } from './components/WalkControls';
 import { EXHIBITS, MUSEUM_METADATA } from './data/exhibits';
 import { Compass } from 'lucide-react';
 import './App.css';
@@ -30,6 +32,8 @@ export function App() {
   const [webGlSupported] = useState(() => checkWebGLSupport());
   const [is3DMode, setIs3DMode] = useState(() => checkWebGLSupport());
   const [showGuideTip, setShowGuideTip] = useState(true);
+  const [isQrOpen, setIsQrOpen] = useState(false);
+  const [walkDirection, setWalkDirection] = useState(0);
 
   // Auto-hide the initial touch hint after 7 seconds
   useEffect(() => {
@@ -45,10 +49,12 @@ export function App() {
   const handleSelectExhibit = useCallback((exhibit) => {
     setActiveExhibit(exhibit);
     setShowGuideTip(false);
+    setWalkDirection(0);
   }, []);
 
   const handleOverview = useCallback(() => {
     setActiveExhibit(null);
+    setWalkDirection(0);
   }, []);
 
   const currentIndex = activeExhibit
@@ -73,25 +79,88 @@ export function App() {
     }
   }, [currentIndex]);
 
+  // Walking Controls handlers
+  const handleWalkLeft = useCallback(() => {
+    setWalkDirection(-1);
+    setShowGuideTip(false);
+  }, []);
+
+  const handleWalkRight = useCallback(() => {
+    setWalkDirection(1);
+    setShowGuideTip(false);
+  }, []);
+
+  const handleStepLeft = useCallback(() => {
+    setShowGuideTip(false);
+    if (activeExhibit) {
+      handlePrev();
+    } else {
+      // Step left along hall
+      setWalkDirection(-1);
+      setTimeout(() => setWalkDirection(0), 220);
+    }
+  }, [activeExhibit, handlePrev]);
+
+  const handleStepRight = useCallback(() => {
+    setShowGuideTip(false);
+    if (activeExhibit) {
+      handleNext();
+    } else {
+      // Step right along hall
+      setWalkDirection(1);
+      setTimeout(() => setWalkDirection(0), 220);
+    }
+  }, [activeExhibit, handleNext]);
+
   const handleToggleMode = useCallback(() => {
     if (!webGlSupported) return;
     setIs3DMode((prev) => !prev);
   }, [webGlSupported]);
 
-  // Keyboard navigation for accessibility
+  // Keyboard navigation & walking controls (Arrow keys + A/D keys)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape') {
-        handleOverview();
-      } else if (e.key === 'ArrowRight') {
-        handleNext();
-      } else if (e.key === 'ArrowLeft') {
-        handlePrev();
+        if (isQrOpen) {
+          setIsQrOpen(false);
+        } else {
+          handleOverview();
+        }
+      } else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') {
+        if (activeExhibit) {
+          handleNext();
+        } else {
+          setWalkDirection(1);
+        }
+      } else if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
+        if (activeExhibit) {
+          handlePrev();
+        } else {
+          setWalkDirection(-1);
+        }
       }
     };
+
+    const handleKeyUp = (e) => {
+      if (
+        e.key === 'ArrowRight' ||
+        e.key === 'ArrowLeft' ||
+        e.key === 'a' ||
+        e.key === 'A' ||
+        e.key === 'd' ||
+        e.key === 'D'
+      ) {
+        setWalkDirection(0);
+      }
+    };
+
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handleOverview, handleNext, handlePrev]);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [handleOverview, handleNext, handlePrev, activeExhibit, isQrOpen]);
 
   return (
     <div className="app-viewport">
@@ -103,6 +172,7 @@ export function App() {
             setHasEntered(true);
             setIs3DMode(false);
           }}
+          onOpenQr={() => setIsQrOpen(true)}
         />
       )}
 
@@ -114,6 +184,7 @@ export function App() {
           onOverview={handleOverview}
           is3DMode={is3DMode}
           onToggleMode={handleToggleMode}
+          onOpenQr={() => setIsQrOpen(true)}
         />
       )}
 
@@ -127,7 +198,18 @@ export function App() {
               onSelectExhibit={handleSelectExhibit}
               onHoverExhibit={setHoveredExhibitId}
               onFloorClick={handleOverview}
+              walkDirection={walkDirection}
             />
+
+            {/* Left / Right Walking Controls for mobile & desktop */}
+            {hasEntered && !activeExhibit && (
+              <WalkControls
+                onWalkLeft={handleWalkLeft}
+                onWalkRight={handleWalkRight}
+                onStepLeft={handleStepLeft}
+                onStepRight={handleStepRight}
+              />
+            )}
 
             {/* Floating Guide Toast for Mobile Students */}
             {hasEntered && showGuideTip && !activeExhibit && (
@@ -165,6 +247,12 @@ export function App() {
           webGlFailed={!webGlSupported}
         />
       )}
+
+      {/* 4. Global QR Code Modal */}
+      <QrModal
+        isOpen={isQrOpen}
+        onClose={() => setIsQrOpen(false)}
+      />
     </div>
   );
 }

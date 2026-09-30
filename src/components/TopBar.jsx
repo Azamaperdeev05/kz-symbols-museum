@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, ListFilter, Sparkles } from 'lucide-react';
+import { Home, ListFilter, Sparkles, QrCode } from 'lucide-react';
 import { EXHIBITS } from '../data/exhibits';
 
 export function TopBar({
@@ -7,7 +7,8 @@ export function TopBar({
   onSelectExhibit,
   onOverview,
   is3DMode,
-  onToggleMode
+  onToggleMode,
+  onOpenQr
 }) {
   return (
     <header className="museum-topbar" role="banner">
@@ -54,6 +55,17 @@ export function TopBar({
               <span className="quick-btn-label">Шолу</span>
             </button>
           )}
+
+          {/* QR Code Modal Trigger Button */}
+          <button
+            onClick={onOpenQr}
+            className="qr-toggle-btn"
+            title="Сайттың QR-кодын көрсету"
+            aria-label="QR-кодты ашу"
+          >
+            <QrCode size={16} className="qr-icon-gold" />
+            <span className="qr-toggle-label">QR</span>
+          </button>
 
           <button
             onClick={onToggleMode}
