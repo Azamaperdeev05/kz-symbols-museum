@@ -124,11 +124,13 @@ export function FallbackView({ onSwitchTo3D, webGlFailed = false }) {
                   <div className="fallback-audio-card">
                     <audio
                       ref={(el) => (audioRefs.current[exhibit.id] = el)}
-                      src={exhibit.audio}
                       preload="metadata"
                       onEnded={() => setPlayingId(null)}
                       onError={() => console.warn('Audio file not found')}
-                    />
+                    >
+                      <source src={exhibit.audio} type="audio/mp4" />
+                      <source src="/audio/anthem.mp3" type="audio/mpeg" />
+                    </audio>
                     <button
                       onClick={() => toggleAudio(exhibit.id)}
                       className={`fallback-audio-btn ${playingId === exhibit.id ? 'playing' : ''}`}

@@ -27,42 +27,36 @@ export function MuseumLights({ activeExhibitId }) {
         intensity={0.6}
       />
 
-      {/* 5. Ceiling Spotlights for each Exhibit */}
-      {/* Flag Spotlight */}
-      <spotLight
-        position={[-3.3, 4.8, -1.0]}
-        target-position={[-3.3, 1.8, -2.4]}
-        color="#fff5cc"
-        intensity={activeExhibitId === 'flag' ? 35 : 22}
-        angle={0.6}
-        penumbra={0.6}
-        distance={10}
+      {/* 5. Museum Exhibit Showcase Accent Lights (Front + Top illumination) */}
+      {/* Flag Light */}
+      <pointLight
+        position={[-3.3, 3.2, -1.2]}
+        color="#fff4d0"
+        intensity={activeExhibitId === 'flag' ? 22 : 12}
+        distance={8}
+        decay={1.6}
       />
 
-      {/* Coat of Arms / Emblem Spotlight */}
-      <spotLight
-        position={[0, 4.8, -2.2]}
-        target-position={[0, 1.8, -3.8]}
-        color="#fff5cc"
-        intensity={activeExhibitId === 'emblem' ? 35 : 22}
-        angle={0.6}
-        penumbra={0.6}
-        distance={10}
+      {/* Emblem Light */}
+      <pointLight
+        position={[0, 3.2, -2.6]}
+        color="#fff4d0"
+        intensity={activeExhibitId === 'emblem' ? 22 : 12}
+        distance={8}
+        decay={1.6}
       />
 
-      {/* Anthem Spotlight */}
-      <spotLight
-        position={[3.3, 4.8, -1.0]}
-        target-position={[3.3, 1.8, -2.4]}
-        color="#fff5cc"
-        intensity={activeExhibitId === 'anthem' ? 35 : 22}
-        angle={0.6}
-        penumbra={0.6}
-        distance={10}
+      {/* Anthem Light */}
+      <pointLight
+        position={[3.3, 3.2, -1.2]}
+        color="#fff4d0"
+        intensity={activeExhibitId === 'anthem' ? 22 : 12}
+        distance={8}
+        decay={1.6}
       />
 
       {/* Floor glow accent */}
-      <pointLight position={[0, 0.5, 0]} color="#00afca" intensity={3} distance={6} />
+      <pointLight position={[0, 0.4, 0]} color="#00afca" intensity={4} distance={6} decay={1.5} />
     </group>
   );
 }

@@ -72,8 +72,8 @@ export function CameraController({ activeExhibit, onUserStartOrbit }) {
       dampingFactor={0.06}
       rotateSpeed={0.8}
       enablePan={false}
-      minDistance={1.8}
-      maxDistance={7.0}
+      minDistance={1.2}
+      maxDistance={9.5}
       minPolarAngle={Math.PI / 4.5}
       maxPolarAngle={Math.PI / 2 + 0.02}
       onStart={() => {

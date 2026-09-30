@@ -97,17 +97,19 @@ export function InfoPanel({
       aria-labelledby="info-panel-title"
       aria-modal="false"
     >
-      {/* Hidden HTML5 Audio Element (NO autoplay) */}
+      {/* HTML5 Audio Element (NO autoplay) */}
       {exhibit.audio && (
         <audio
           ref={audioRef}
-          src={exhibit.audio}
           preload="metadata"
           onTimeUpdate={handleTimeUpdate}
           onLoadedMetadata={handleLoadedMetadata}
           onEnded={handleAudioEnded}
           onError={() => setAudioError(true)}
-        />
+        >
+          <source src={exhibit.audio} type="audio/mp4" />
+          <source src="/audio/anthem.mp3" type="audio/mpeg" />
+        </audio>
       )}
 
       {/* Top Drag Handle */}
