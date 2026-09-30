@@ -46,10 +46,10 @@ export function MuseumRoom() {
           args={[8.5, 8.5, 6.4, 48, 1, true, Math.PI * 0.7, Math.PI * 1.6]}
         />
         <meshStandardMaterial
-          color="#081320"
-          roughness={0.85}
+          color="#0d2138"
+          roughness={0.7}
           metalness={0.1}
-          side={THREE.BackSide}
+          side={THREE.DoubleSide}
         />
       </mesh>
 

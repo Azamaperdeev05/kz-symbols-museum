@@ -1,6 +1,5 @@
 import React, { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { Loader } from '@react-three/drei';
 import { MuseumRoom } from './MuseumRoom';
 import { MuseumLights } from './MuseumLights';
 import { ExhibitItem } from './ExhibitItem';
@@ -29,7 +28,6 @@ export function MuseumCanvas({
           powerPreference: 'high-performance'
         }}
         onPointerMissed={(e) => {
-          // If clicked empty space / floor
           if (e.target.tagName === 'CANVAS' && onFloorClick) {
             onFloorClick();
           }
@@ -38,10 +36,15 @@ export function MuseumCanvas({
         <color attach="background" args={['#040a12']} />
         <fog attach="fog" args={['#040a12', 12, 28]} />
 
-        <Suspense fallback={null}>
-          <MuseumLights activeExhibitId={activeExhibit?.id} />
-          <MuseumRoom />
+        {/* 1. Lighting & Architecture always render immediately without suspending */}
+        <MuseumLights activeExhibitId={activeExhibit?.id} />
+        <MuseumRoom />
 
+        {/* 2. Interactive Camera Controller */}
+        <CameraController activeExhibit={activeExhibit} />
+
+        {/* 3. Exhibits (each with its own instant canvas texture fallback) */}
+        <Suspense fallback={null}>
           {EXHIBITS.map((exhibit) => (
             <ExhibitItem
               key={exhibit.id}
@@ -52,35 +55,8 @@ export function MuseumCanvas({
               onHover={onHoverExhibit}
             />
           ))}
-
-          <CameraController
-            activeExhibit={activeExhibit}
-          />
         </Suspense>
       </Canvas>
-
-      {/* Drei Loader for initial asset loading */}
-      <Loader
-        dataInterpolation={(p) => `Жүктелуде: ${p.toFixed(0)}%`}
-        containerStyles={{
-          background: 'radial-gradient(circle at center, #091e36 0%, #030811 100%)',
-          zIndex: 999
-        }}
-        innerStyles={{
-          backgroundColor: '#0a1d33',
-          border: '1px solid #d4af37'
-        }}
-        barStyles={{
-          backgroundColor: '#fec400',
-          height: '6px'
-        }}
-        dataStyles={{
-          color: '#f5d77f',
-          fontFamily: 'Outfit, sans-serif',
-          fontSize: '15px',
-          fontWeight: 600
-        }}
-      />
     </div>
   );
 }

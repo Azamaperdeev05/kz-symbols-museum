@@ -67,6 +67,7 @@ export function CameraController({ activeExhibit, onUserStartOrbit }) {
   return (
     <OrbitControls
       ref={controlsRef}
+      target={MUSEUM_OVERVIEW_CAMERA.target}
       enableDamping={true}
       dampingFactor={0.06}
       rotateSpeed={0.8}

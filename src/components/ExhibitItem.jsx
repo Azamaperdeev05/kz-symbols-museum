@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
-import { Text, Html } from '@react-three/drei';
+import { Html } from '@react-three/drei';
 import {
   createFallbackCanvasTexture,
-  createAnthemPlaqueTexture
+  createAnthemPlaqueTexture,
+  createPedestalPlaqueTexture
 } from '../utils/textureHelper';
 
 export function ExhibitItem({ exhibit, isSelected, isHovered, onSelect, onHover }) {
@@ -15,6 +16,10 @@ export function ExhibitItem({ exhibit, isSelected, isHovered, onSelect, onHover 
     }
     return createFallbackCanvasTexture(exhibit.title, 'Мемлекеттік рәміз');
   });
+
+  const [plaqueTexture] = useState(() =>
+    createPedestalPlaqueTexture(exhibit.number, exhibit.title, exhibit.year)
+  );
 
   // Load texture safely with fallback
   useEffect(() => {
@@ -102,48 +107,15 @@ export function ExhibitItem({ exhibit, isSelected, isHovered, onSelect, onHover 
         />
       </mesh>
 
-      {/* Front Gold Plaque with Name & Year */}
+      {/* Front Gold Plaque with Name & Year (Texture-based, never suspends) */}
       <mesh position={[0, 0.48, 0.355]}>
-        <planeGeometry args={[0.84, 0.28]} />
+        <planeGeometry args={[0.84, 0.32]} />
         <meshStandardMaterial
-          color="#1e2c3f"
-          roughness={0.3}
-          metalness={0.5}
+          map={plaqueTexture}
+          roughness={0.25}
+          metalness={0.4}
         />
       </mesh>
-
-      {/* Plaque Gold Border */}
-      <mesh position={[0, 0.48, 0.356]}>
-        <planeGeometry args={[0.86, 0.3]} />
-        <meshStandardMaterial
-          color="#d4af37"
-          roughness={0.2}
-          metalness={0.8}
-          wireframe
-        />
-      </mesh>
-
-      {/* Plaque 3D Text */}
-      <Text
-        position={[0, 0.53, 0.36]}
-        fontSize={0.065}
-        color="#f5d77f"
-        anchorX="center"
-        anchorY="middle"
-        font="https://fonts.gstatic.com/s/outfit/v11/QEUWsgEr9ERC-v3oqfv7wPb9.woff2"
-      >
-        {`${exhibit.number} • ${exhibit.title.toUpperCase()}`}
-      </Text>
-      <Text
-        position={[0, 0.43, 0.36]}
-        fontSize={0.045}
-        color="#cbd5e1"
-        anchorX="center"
-        anchorY="middle"
-        maxWidth={0.75}
-      >
-        {`${exhibit.year} жыл`}
-      </Text>
 
       {/* 2. Easel / Frame Mount behind the picture */}
       <mesh position={[0, 1.45, -0.06]}>

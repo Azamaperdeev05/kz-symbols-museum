@@ -245,6 +245,51 @@ export function createFallbackCanvasTexture(title, subtitle = 'Мемлекет�
 }
 
 /**
+ * Creates an in-memory CanvasTexture for the pedestal brass plaque.
+ * 100% local, instant rendering, never suspends, supports all Kazakh Cyrillic glyphs.
+ */
+export function createPedestalPlaqueTexture(number, title, year) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 200;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return new THREE.Texture();
+
+  // Dark metallic background
+  ctx.fillStyle = '#0f1f33';
+  ctx.fillRect(0, 0, 512, 200);
+
+  // Outer gold border
+  ctx.strokeStyle = '#d4af37';
+  ctx.lineWidth = 8;
+  ctx.strokeRect(6, 6, 500, 188);
+
+  // Inner thin gold border
+  ctx.strokeStyle = '#fde68a';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(14, 14, 484, 172);
+
+  // Text
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  // Number & Title
+  ctx.font = 'bold 36px "Outfit", sans-serif, system-ui';
+  ctx.fillStyle = '#f5d77f';
+  ctx.fillText(`${number} • ${title.toUpperCase()}`, 256, 75);
+
+  // Year
+  ctx.font = '600 28px "Plus Jakarta Sans", sans-serif, system-ui';
+  ctx.fillStyle = '#cbd5e1';
+  ctx.fillText(`${year} жыл`, 256, 135);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+/**
  * Fallback SVG Data URL for 2D <img> tags
  */
 export function getFallbackDataUri(title) {
